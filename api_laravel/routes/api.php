@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\API\MahasiswaController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\API\BukuController;
 use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
-Route::get('mahasiswa',[MahasiswaController::class,'index'])->middleware('auth:sanctum');
-Route::post('login',[LoginController::class, 'loginApi']);
+// */
+// Route::get('mahasiswa',[MahasiswaControlleroller::class,'index'])->middleware('auth:sanctum');
+
 
 // Route::get('mahasiswa/show/{id}',[MahasiswaController::class,'show']);
 // Route::post('mahasiswa/store',[MahasiswaController::class,'store']);
@@ -29,7 +29,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::post('auth/login',[AuthController::class, 'login']);
+Route::post('auth/login',[AuthController::class, 'login'])->name('login');
 Route::post('auth/register',[AuthController::class, 'register']);
 Route::get('auth/me',[AuthController::class, 'me'])->middleware('auth:sanctum');
 Route::get('auth/logout',[AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('buku/store',[BukuController::class, 'storeBook']);
+Route::get('buku',[BukuController::class, 'show']);
+
+

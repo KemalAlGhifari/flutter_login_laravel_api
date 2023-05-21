@@ -12,60 +12,63 @@ class AuthController extends Controller
 {
     private $response = [
         "message" => null,
-        'data' =>null
+        'data' => null
     ];
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $request->validate([
             'name' => 'required',
             'email' => 'required',
             'password' => 'required',
         ]);
-
         $data = User::create([
-            'name' =>$request->name,
-            'email' =>$request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-        $this->response['message'] = 'success' ;
-        return response()->json($this->response, 200);
-    }
-
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required',
-            'password' => 'required',  
-        ]);
-        $user = User::where('email',$request->email)->first();
-
-        if(!$user || ! Hash::check($request->password, $user->password)){
-            return response()->json([
-                'message' =>'failed',
-
-            ]);
+        if($data){
+            $response = ['status' => 200, 'message' => 'Register Successfully! Welcome to Our Community'];
+            return response()->json($response);
+        }else{
+            $response = ['status' => 500, 'message' => 'Error bro'];
+            return response()->json($response);
         }
-        $token = $user->createToken($request->device_name)->plainTextToken;
-        $this->response['message'] = 'success';
-        $this->response['data'] = [
-            'token' => $token
-        ];
-        return response()->json($this->response, 200);
+        
+       
     }
 
-    public function me(){
-        $user = Auth::user();
+    public  function Login(Request $R)
+    {
+        $user = User::where('email', $R->email)->first();
 
+        if ($user != '[]' && Hash::check($R->password, $user->password)) {
+            $token = $user->createToken('Personal Access Token')->plainTextToken;
+            $response = ['status' => 200, 'token' => $token, 'user' => $user, 'message' => 'Successfully Login! Welcome Back'];
+            return response()->json($response);
+        } else if ($user == '[]') {
+            $response = ['status' => 500, 'message' => 'No account found with this email'];
+            return response()->json($response);
+        } else {    
+            $response = ['status' => 500, 'message' => 'Wrong email or password! please try again'];
+            return response()->json($response);
+        }
+    }
+
+    public function me()
+    {
+        $user = Auth::user();
         $this->response['message'] = 'success';
         $this->response['data'] = $user;
 
-        return response()->json($this->response,200);
+        return response()->json($this->response, 200);
     }
 
-    public function logout(){
+    public function logout()
+    {
         $logout = auth()->user()->currentAccessToken()->delete();
 
         $this->response['message'] = 'success';
 
-        return response()->json($this->response,200);
+        return response()->json($this->response, 200);
     }
 }
